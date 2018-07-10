@@ -6,7 +6,7 @@
 /*   By: bbixby <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/09 13:32:44 by bbixby            #+#    #+#             */
-/*   Updated: 2018/07/09 20:49:15 by bbixby           ###   ########.fr       */
+/*   Updated: 2018/07/09 21:10:43 by bbixby           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,9 @@ void	ft_create_copies(bsq_struct *bsq, char **argv)
 	ft_putchar('\n');
 	while ((ret = read(fd, buf, BUF_SIZE )))
 	{
-		while (b != '\n')
+		while (b < bsq->r1_offset)
 			b++;
-		if (b == '\n')
-			b++;
-		while (b < bsq->rows * bsq->cols + 1)
+		while (b - bsq->r1_offset < bsq->rows * bsq->cols)
 		{
 			if (buf[b] == '\n')
 			{
@@ -68,7 +66,12 @@ void	ft_create_copies(bsq_struct *bsq, char **argv)
 			else
   			{
     			cdup[i][j] = buf[b];
-    			if (i != 0 && j != 0 && buf[b] != bsq->obstacle)
+				if (i == 0 || j == 0)
+					if (buf[b] == bsq->empty)
+						idup[i][j] = 1;
+					else
+						idup[i][j] = 0;
+				else if (buf[b] == bsq->empty)
     			{
       				idup[i][j] = 1 + (ft_min(idup[i][j - 1], idup[i - 1][j], idup[i - 1][j - 1]));
     			}
@@ -113,7 +116,7 @@ void	ft_readfile(char **argv)
 		bsq->obstacle = rows[i - 2];
 		bsq->empty = rows[i - 3];
     	bsq->rows = ft_atoi(rows);
-
+		bsq->r1_offset = i + 1;
 		have_rows += 1;
 		i++;
 		k = 0;

@@ -6,7 +6,7 @@
 /*   By: bbixby <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/09 12:47:57 by bbixby            #+#    #+#             */
-/*   Updated: 2018/07/09 18:07:31 by bbixby           ###   ########.fr       */
+/*   Updated: 2018/07/09 20:57:06 by bbixby           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ typedef struct    b_struct
 {
   int             rows;
   int             cols;
+  int				r1_offset;
   char            empty;
   char            obstacle;
   char            full;
