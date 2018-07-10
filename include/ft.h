@@ -6,7 +6,7 @@
 /*   By: bbixby <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/09 12:47:57 by bbixby            #+#    #+#             */
-/*   Updated: 2018/07/09 20:57:06 by bbixby           ###   ########.fr       */
+/*   Updated: 2018/07/09 22:14:39 by bbixby           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,13 @@ typedef struct    b_struct
   int             rows;
   int             cols;
   int				r1_offset;
+  int				max_x;
+  int				max_y;
+  int				max_square_size;
   char            empty;
   char            obstacle;
   char            full;
+  char 				*bsq_copy;
 }					bsq_struct;
 
 void	ft_putchar(char c);
