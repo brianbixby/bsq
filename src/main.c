@@ -31,17 +31,11 @@ int		ft_min(int a, int b, int c)
 	return (m);
 }
 
-void print(char *arr)
+void	iprint(int *arr, int m, int n)
 {
-	while (*arr)
-		ft_putchar(*arr++);
-}
-
-void iprint(int *arr, int m, int n)
-{
-	int i;
-	int j;
-	int k;
+	int	i;
+	int	j;
+	int	k;
 
 	i = -1;
 	k = 0;
@@ -59,7 +53,7 @@ void iprint(int *arr, int m, int n)
 	}
 }
 
-void	ft_fillbsq(bsq_struct *bsq)
+void	ft_fillbsq(t_bsq_struct *bsq)
 {
 	int i;
 	int j;
@@ -69,108 +63,76 @@ void	ft_fillbsq(bsq_struct *bsq)
 	i = -1;
 	beg_x = bsq->max_x + 1 - bsq->max_square_size;
 	beg_y = bsq->max_y + 1 - bsq->max_square_size;
-	printf("%d", bsq->max_square_size);
-	printf("%c", '\n');
 	while (++i <= bsq->max_square_size)
 	{
 		j = -1;
 		while (++j < bsq->max_square_size)
 		{
 			if (beg_y + i == 1)
-			{
-			bsq->bsq_copy[beg_x + j] = bsq->full;
-			}
+				bsq->bsq_copy[beg_x + j] = bsq->full;
 			else
-			{
-			bsq->bsq_copy[(beg_y + i - 1) * (bsq->cols) + beg_x + j] = bsq->full;
-			}
+				bsq->bsq_copy[(beg_y + i - 1) * (bsq->cols) + beg_x + j] = bsq->full;
 		}
 	}
-	ft_putchar('\n');
-	print(bsq->bsq_copy);
+	ft_putstr(bsq->bsq_copy);
 }
 
-void	ft_create_copies(bsq_struct *bsq, char **argv)
+void	ft_create_copies(t_bsq_struct *bsq, char **argv)
 {
-	char 	*cdup;
 	int		idup[bsq->rows][bsq->cols - 1];
-	int i;
-	int j;
-	int b;
-	int k;
+	char	*cdup;
+	char	*buf;
+	int		i;
+	int		j;
+	int		b;
+	int		fd;
 
-	int fd;
-	int ret;
 	fd = open(*argv, O_RDONLY);
-	char *buf;
-	bsq->max_square_size = 0;
 	cdup = (char *)malloc(sizeof(char) * (bsq->rows * bsq->cols + 1));
-	buf = (char *)malloc(sizeof(char) * BUF_SIZE);
-	i = 0;
-	j = 0;
-	b = 0;
-	k = 0;
-	ft_putchar('\n');
-	while ((ret = read(fd, buf, BUF_SIZE )))
+	buf = (char *)malloc(sizeof(char) * (bsq->rows * bsq->cols + bsq->r1_offset));
+	bsq->max_square_size = i = j = b = 0;
+	while (read(fd, buf, bsq->rows * bsq->cols + bsq->r1_offset))
 	{
 		while (b < bsq->r1_offset)
-		{
-			printf("%d", b);
-			printf("%c", '\n');
 			b++;
-		}
-		while (b - bsq->r1_offset < bsq->rows * bsq->cols)
+		while (b < bsq->rows * bsq->cols + bsq->r1_offset)
 		{
-			cdup[k] = buf[b];
-			k++;
+			cdup[b - bsq->r1_offset] = buf[b];
 			if (buf[b] == '\n')
 			{
-    			i++;
-				b++;
-    			j = 0;
-				printf("%c",'\n');
-				printf("%c", '\n');
-  			}
+				i++;
+				j = 0;
+			}
 			else
-  			{
+			{
 				if (i == 0 || j == 0)
-					if (buf[b] == bsq->empty)
-						idup[i][j] = 1;
-					else
-						idup[i][j] = 0;
+					buf[b] == bsq->empty ? (idup[i][j] = 1) : (idup[i][j] = 0);
 				else if (buf[b] == bsq->empty)
-    			{
-      				idup[i][j] = 1 + (ft_min(idup[i][j - 1], idup[i - 1][j], idup[i - 1][j - 1]));
-    			}
-    			else
-      				idup[i][j] = 0;
+					idup[i][j] = 1 + (ft_min(idup[i][j - 1], idup[i - 1][j], idup[i - 1][j - 1]));
+				else
+					idup[i][j] = 0;
 				if (idup[i][j] > bsq->max_square_size)
 				{
 					bsq->max_square_size = idup[i][j];
 					bsq->max_y = i;
 					bsq->max_x = j;
 				}
-				printf("%d",idup[i][j]);
-    			j++;
-				b++;
-  			}
+				j++;
+			}
+			b++;
 		}
-		printf("max square size %d \n", bsq->max_square_size);
-		printf("max x %d \n", bsq->max_x);
-		printf("max y %d \n", bsq->max_y);
-		buf[ret] = '\0';
-		bsq->bsq_copy = cdup;
+		buf[b] = '\0';
 	}
-	/* iprint((int *)&idup[0][0], bsq->rows, bsq->cols); */
-	print(bsq->bsq_copy);
+	bsq->bsq_copy = cdup;
+	free(buf);
 	ft_fillbsq(bsq);
 }
 
-bsq_struct	*ft_setvars(char *row, int i, int j)
+t_bsq_struct	*ft_setvars(char *row, int i, int j)
 {
-	bsq_struct	*bsq;
+	t_bsq_struct	*bsq;
 
-	bsq = malloc(sizeof(bsq_struct));
+	bsq = malloc(sizeof(t_bsq_struct));
 	bsq->full = row[i - j - 2];
 	bsq->obstacle = row[i - j - 3];
 	bsq->empty = row[i - j - 4];
@@ -183,10 +145,10 @@ bsq_struct	*ft_setvars(char *row, int i, int j)
 
 void	ft_readr1(char **argv)
 {
-	char 	*buf;
-	int 	i;
+	char	*buf;
+	int		i;
 	int		j;
-	char 	row[100];
+	char	row[100];
 
 	buf = (char *)malloc(sizeof(char) * BUF_SIZE);
 	i = 0;
@@ -204,7 +166,7 @@ void	ft_readr1(char **argv)
 			j++;
 			i++;
 		}
-		break;
+		break ;
 	}
 	free(buf);
 	ft_create_copies(ft_setvars(row, i, j), argv);
