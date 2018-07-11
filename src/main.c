@@ -147,7 +147,7 @@ void	ft_create_copies(bsq_struct *bsq, char **argv)
 				if (idup[i][j] > bsq->max_square_size)
 				{
 					bsq->max_square_size = idup[i][j];
-					bsq->max_y = (i);
+					bsq->max_y = i;
 					bsq->max_x = j;
 				}
 				printf("%d",idup[i][j]);
@@ -166,60 +166,48 @@ void	ft_create_copies(bsq_struct *bsq, char **argv)
 	ft_fillbsq(bsq);
 }
 
-void	ft_readfile(char **argv)
+bsq_struct	*ft_setvars(char *row, int i, int j)
 {
-	int		fd;
-	int		ret;
-	int 	i;
-	int		k;
-	int 	have_rows;
-	char 	rows[100];
-	char *buf;
 	bsq_struct	*bsq;
 
-	buf = (char *)malloc(sizeof(char) * BUF_SIZE);
-  	bsq = malloc(sizeof(bsq_struct));
-	fd = open(*argv, O_RDONLY);
-	i = 0;
-	have_rows = 0;
-	while ((ret = read(fd, buf, BUF_SIZE)))
-	{
-		while (buf[i] != '\n' && !have_rows)
-		{
-			rows[i] = buf[i];
-			i++;
-		}
-		bsq->full = rows[i - 1];
-		bsq->obstacle = rows[i - 2];
-		bsq->empty = rows[i - 3];
-    	bsq->rows = ft_atoi(rows);
-		bsq->r1_offset = i + 1;
-		have_rows += 1;
-		i++;
-		k = 0;
-		while (have_rows == 1 && buf[i] != '\n')
-		{
-			k++;
-			i++;
-		}
-		have_rows += 1;
-		bsq->cols = k + 1;
+	bsq = malloc(sizeof(bsq_struct));
+	bsq->full = row[i - j - 2];
+	bsq->obstacle = row[i - j - 3];
+	bsq->empty = row[i - j - 4];
+	bsq->rows = ft_atoi(row, (i - j - 4));
+	bsq->r1_offset = i - j;
+	bsq->cols = j + 1;
+	free(bsq);
+	return (bsq);
+}
 
-		buf[ret] = '\0';
-		ft_putstr(buf);
+void	ft_readr1(char **argv)
+{
+	char 	*buf;
+	int 	i;
+	int		j;
+	char 	row[100];
+
+	buf = (char *)malloc(sizeof(char) * BUF_SIZE);
+	i = 0;
+	j = 0;
+	while (read(open(*argv, O_RDONLY), buf, BUF_SIZE))
+	{
+		while (buf[i] != '\n')
+		{
+			row[i] = buf[i];
+			i++;
+		}
+		i++;
+		while (buf[i] != '\n')
+		{
+			j++;
+			i++;
+		}
+		break;
 	}
-  ft_putchar(bsq->full);
-  ft_putchar('\n');
-  ft_putchar(bsq->obstacle);
-  ft_putchar('\n');
-  ft_putchar(bsq->empty);
-  ft_putchar('\n');
-  ft_putnum(bsq->rows);
-  ft_putchar('\n');
-  ft_putnum(bsq->cols);
-  ft_putchar('\n');
-  ft_putnum(bsq->r1_offset);
-  ft_create_copies(bsq, argv);
+	free(buf);
+	ft_create_copies(ft_setvars(row, i, j), argv);
 }
 
 int		main(int argc, char **argv)
@@ -228,6 +216,6 @@ int		main(int argc, char **argv)
 
 	i = 0;
 	while (++i < argc)
-		ft_readfile(argv + i);
+		ft_readr1(argv + i);
 	return (0);
 }

@@ -32,7 +32,7 @@ typedef struct    b_struct
 void	ft_putchar(char c);
 void	ft_putstr(char *str);
 void	ft_putnum(int i);
-int		ft_atoi(char *str);
+int		ft_atoi(char *str, int i);
 int		ft_rowlen(char *str);
 void	fake(void);
 

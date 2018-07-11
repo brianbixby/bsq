@@ -47,27 +47,29 @@ void	ft_putnum(int i)
 		ft_putchar(nb + '0');
 }
 
-int		ft_atoi(char *str)
+int		ft_atoi(char *str, int i)
 {
 	int	count;
 	int	neg;
+	int j;
 
 	neg = 1;
 	count = 0;
-	while (*str == '\t' || *str == '\n' || *str == '\v'
-		|| *str == '\f' || *str == '\r' || *str == ' ')
-		str++;
-	if (*str == '-' || *str == '+')
+	j = 0;
+	while (str[j] == '\t' || str[j] == '\n' || str[j] == '\v'
+		|| str[j] == '\f' || str[j] == '\r' || str[j] == ' ')
+		j++;
+	if (str[j] == '-' || str[j] == '+')
 	{
-		if (*str == '-')
+		if (str[j] == '-')
 			neg = -1;
-		str++;
+		j++;
 	}
-	while (*str <= '9' && *str >= '0')
+	while (str[j] <= '9' && str[j] >= '0' && j < i)
 	{
 		count *= 10;
 		count += (*str - '0');
-		str++;
+		j++;
 	}
 	count *= neg;
 	return (count);
